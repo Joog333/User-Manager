@@ -24,20 +24,20 @@ def add(filename, fer):
 
 
    site = site.capitalize()
- 
+
    encrypted_password = fer.encrypt(password_code.encode()) # Encrypts the password chosen by the user
- 
+
    with open(filename, "r") as f: # Checks if already exists a register for the same username and site
        lines = f.readlines()
-     
+
        for line in lines:
            line = line.strip()
            if '|' in line:
                existing_user, existing_pwd_site = line.split("|", 1)
-             
+
                if '|' in existing_pwd_site:
                    existing_pwd, existing_site = existing_pwd_site.split("|", 1)
-                 
+
                    if existing_user == user_code and existing_site == site: # Checks if already exists the same username to the same place of login
                        print(f"Error. There is already an instance of {user_code} being used in {site}...\n")
                        return  # Exits the function without adding the register
@@ -51,17 +51,17 @@ def add(filename, fer):
 def view(filename, fer): #Function that allows the view of each username|password present in the file using a table.
    try:
        table = PrettyTable(['Usernames', 'Passwords', 'Login-in'])
-     
+
        with open(filename, "r") as f:
            lines = f.readlines()
            if not lines:
                print("\nThe file is empty! Add data to view.")
                return
            print("\nThe file contains the following data:\n")
-         
+
            for line in lines:
                data = line.strip()
-             
+
                if '|' in data: #Separates the '|' in between the username, password and place of login.
                    user, pwd = data.split("|", 1)
 
@@ -72,7 +72,7 @@ def view(filename, fer): #Function that allows the view of each username|passwor
 
                    try:
                        decrypted_password = fer.decrypt(pwd.encode()).decode() #Decrypts the password chosen by the user.
-                     
+
                        table.add_row([user, decrypted_password, site])
                    except Exception as e:
                        print(f"Error decrypting the password for {user}: {e}")
@@ -97,7 +97,7 @@ def search(filename, fer):
    except FileNotFoundError:
        print("\nThe file does not exist. Add a user and password to create the file.")
        return
- 
+
    searchUPL = input("\nEnter your search type ('username', 'password', 'log-in'): ")
 
 
@@ -248,18 +248,17 @@ def remove(filename, fer):
     except Exception as e:
         print(f"\nError. Unable to remove the inputs: {e}.\n")
 
-
 def master_code(): #Function that defines the entry of the user based on the master password.
    t = 60
    time_adder = 1
- 
+
    try:
        with open("master_password.txt", "r") as f:
            master_password = f.readline().strip()
    except FileNotFoundError:
        print("The master password file was not found!")
        return False
- 
+
    for i in range(3):
        for j in range(3):
            tm = t / 60
@@ -271,11 +270,11 @@ def master_code(): #Function that defines the entry of the user based on the mas
 
 
        print(f"\nToo many failed attempts. Try again in {int(tm)} minutes...\n")
-     
+
        time.sleep(t)
        time_adder += 0.5
        t =  pow(t, time_adder)
- 
+
    print("Access denied!")
    return False
 
@@ -284,21 +283,21 @@ def get_filename(): #Function that allows the selection of the name of an existi
    gfn = True
    while gfn == True:
        filename = input("\nEnter the name of the file (e.g.: data.txt or just data) or type '\\h' for help: ")
-     
+
        match filename:
            case "\\h":
              print("\nThe username, cryptographed password and place of login related in the data must be in a single line separated by '|', with each user on a new line.")
              print("Moreover, each user password must have a respective encryption. Otherwise, the program shall fail.\n")
-     
+
            case "":
              print("Error. Add a name of a file...\n")
-         
+
            case _:
                if '.txt' not in filename:
                    filename = filename + ".txt"
-         
-               gfn = False
- 
+               with open(filename, "a") as f:
+                  gfn = False
+
    return filename
 
 
@@ -326,9 +325,7 @@ while True:
    print("\nSelect your action:\n")
    action = input("\n'add' => add a new user;\n'view' => view all users;\n'search' => search for an username, password or log-in;\n'remove' => remove an user;\n'return' => return to the file selection;\n'quit' => exit the application.\n")
 
-
    action = action.capitalize()
-
 
    match action:
        case "Return":
@@ -346,4 +343,5 @@ while True:
        case "Remove":
            remove(filename, fer)
        case _:
-           print("Invalid entry. Choose 'add', 'view', 'search', 'return' or 'quit'.")
+           print("Invalid entry. Choose 'add', 'view', 'search', 'remove', 'create', 'return' or 'quit'.")
+
